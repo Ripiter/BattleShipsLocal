@@ -31,6 +31,7 @@ namespace Server
                 count++;
             }
         }
+
         public static string GetLocalIPAddress()
         {
             var host = Dns.GetHostEntry(Dns.GetHostName());
@@ -43,6 +44,7 @@ namespace Server
             }
             throw new Exception("No network adapters with an IPv4 address in the system!");
         }
+
         public static void handle_clients(object o)
         {
             int id = (int)o;
@@ -71,12 +73,14 @@ namespace Server
                     break;
                 }
 
+                // This will handle player REQUESTS
                 string data = Encoding.ASCII.GetString(buffer, 0, byte_count);
+
+                // Sets nesseary data to the rest of the players
                 broadcast(buffer);
-                if (data.Length < 200)
-                    Console.WriteLine(data);
-                else
-                    Console.WriteLine("File was send");
+                
+                // Print for debug info
+                Console.WriteLine(data);
             }
 
             lock (_lock)

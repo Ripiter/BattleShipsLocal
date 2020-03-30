@@ -14,8 +14,13 @@ namespace BattleShips
         static Field[,] fields = new Field[24, 24];
         static Connection con = new Connection();
         static object _lock = new object();
+        static char playerChar;
+
         static void Main(string[] args)
         {
+            Console.WriteLine("Insert your character");
+            playerChar = Console.ReadKey().KeyChar;
+
             con.Connect();
             con.gotField += Con_gotField;
 
@@ -27,7 +32,7 @@ namespace BattleShips
                 }
             }
 
-            DrawFiled();
+            DrawField();
             Thread inputThread = new Thread(Input);
             inputThread.Start();
         }
@@ -36,11 +41,11 @@ namespace BattleShips
             string s = string.Empty;
             while (!string.IsNullOrEmpty((s = Console.ReadLine())))
             {
-                con.SendMessage(s);
+                con.SendMessage(s +","+playerChar);
             }
         }
 
-        static void DrawFiled()
+        static void DrawField()
         {
             Console.Clear();
             for (int x = 0; x < fields.GetLength(0); x++)
@@ -59,7 +64,7 @@ namespace BattleShips
             lock (_lock)
             {
                 fields[field.X, field.Y] = field;
-                DrawFiled();
+                DrawField();
             }
         }
     }

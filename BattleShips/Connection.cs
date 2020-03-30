@@ -16,7 +16,7 @@ namespace BattleShips
         public char spliter = ',';
         NetworkStream ns;
         TcpClient client;
-        //TcpClient client;
+
         public void Connect()
         {
             IPAddress ip = IPAddress.Parse(GetLocalIPAddress());
@@ -26,14 +26,7 @@ namespace BattleShips
             ns = client.GetStream();
 
             Thread thread = new Thread(ReceiveData);
-            thread.Start();          
-
-            //client.Client.Shutdown(SocketShutdown.Send);
-            //thread.Join();
-            //ns.Close();
-            //client.Close();
-            //Console.WriteLine("disconnect from server!!");
-            //Console.ReadKey();
+            thread.Start();
         }
 
         public void SendMessage(string message)
@@ -45,12 +38,10 @@ namespace BattleShips
         string GetLocalIPAddress()
         {
             var host = Dns.GetHostEntry(Dns.GetHostName());
-            foreach (var ip in host.AddressList)
+            foreach (IPAddress ip in host.AddressList)
             {
                 if (ip.AddressFamily == AddressFamily.InterNetwork)
-                {
                     return ip.ToString();
-                }
             }
             throw new Exception("No network adapters with an IPv4 address in the system!");
         }
@@ -65,17 +56,22 @@ namespace BattleShips
             while ((byte_count = net.Read(receivedBytes, 0, receivedBytes.Length)) > 0)
             {
                 temp = Encoding.ASCII.GetString(receivedBytes, 0, byte_count);
-                Console.WriteLine("Message");
-                //Console.WriteLine("temp " + temp + "text " + text);
                 temp = temp.Replace("\0", String.Empty);
-                Field field = new Field();
-                field.X = int.Parse(temp.Split(',')[0]);
-                field.Y = int.Parse(temp.Split(',')[1]);
-                field.FieldCharacter = 'Y';
-                
-                if(gotField != null)
-                    gotField(field);
+
+                FormatField(temp);
             }
+        }
+
+        void FormatField(string filedAsString)
+        {
+            Field field = new Field();
+            string[] data = filedAsString.Split(spliter);
+            field.X = int.Parse(data[0]);
+            field.Y = int.Parse(data[1]);
+            field.FieldCharacter = char.Parse(data[2]);
+
+            if (gotField != null)
+                gotField(field);
         }
     }
 }
