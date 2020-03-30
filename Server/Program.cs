@@ -11,6 +11,7 @@ namespace Server
     {
         static readonly object _lock = new object();
         static readonly Dictionary<int, TcpClient> list_clients = new Dictionary<int, TcpClient>();
+        static DataManager dataManager = new DataManager();
         static void Main(string[] args)
         {
             Console.WriteLine("Server Started");
@@ -44,13 +45,13 @@ namespace Server
             }
             throw new Exception("No network adapters with an IPv4 address in the system!");
         }
-
         public static void handle_clients(object o)
         {
             int id = (int)o;
             TcpClient client;
 
-            lock (_lock) client = list_clients[id];
+            lock (_lock)
+                client = list_clients[id];
 
             while (true)
             {
@@ -75,9 +76,13 @@ namespace Server
 
                 // This will handle player REQUESTS
                 string data = Encoding.ASCII.GetString(buffer, 0, byte_count);
+                dataManager.GetCommandType(data);
 
                 // Sets nesseary data to the rest of the players
                 broadcast(buffer);
+
+                // Sends message to currentplayer connected
+                ReturnMessage(stream);
                 
                 // Print for debug info
                 Console.WriteLine(data);
@@ -87,6 +92,12 @@ namespace Server
                 list_clients.Remove(id);
             client.Client.Shutdown(SocketShutdown.Both);
             client.Close();
+        }
+
+        public static void ReturnMessage(NetworkStream stream)
+        {
+            byte[] buffer = Encoding.ASCII.GetBytes("Access Denied");
+            stream.Write(buffer, 0, buffer.Length);
         }
 
         public static void broadcast(byte[] data)

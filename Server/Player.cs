@@ -8,6 +8,23 @@ namespace Server
 {
     class Player
     {
-        PlayerMap playersMap;
+        private PlayerMap playerMap;
+
+        public PlayerMap PlayersMap
+        {
+            get { return playerMap; }
+            set { playerMap = value; }
+        }
+
+
+        private char character;
+
+        public char Character
+        {
+            get { return character; }
+            set { character = value; }
+        }
+
+
     }
 }

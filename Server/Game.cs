@@ -8,9 +8,24 @@ namespace Server
 {
     class Game
     {
-        public void StartGame(Player[] players)
+        Player[] players;
+        public Game()
         {
-
+            // Initialize game
         }
+
+        public int GetAmountofPlayersInGame()
+        {
+            int amount = 0;
+
+            for (int i = 0; i < players.Length; i++)
+            {
+                if (players[i] == null)
+                    amount++;
+            }
+            return amount;
+        }
+
+        
     }
 }
